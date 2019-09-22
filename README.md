@@ -22,7 +22,3 @@ https://github.com/pvial00/DarkPass
 Zanderfish3 512 bit authenticated with Ganja 256 bit - 256 bit IV length
 
 https://github.com/pvial00/Zanderfish3
-
-Spock-CBC 256 bit authenticated with Ganja 256 bit - 128 bit nonce length
-
-https://github.com/pvial00/Spock
