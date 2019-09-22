@@ -1,4 +1,4 @@
-# DarkCastle
+# LiteCastle
 
 *** Warning the cipher contained in this program is still undergoing cryptanalysis
 
