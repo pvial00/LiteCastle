@@ -34,6 +34,7 @@ def getalgorithms():
             algorithms.append(algorithm)
     return algorithms
 
+gen_inputfile()
 c = 0
 
 for x in range(1):
