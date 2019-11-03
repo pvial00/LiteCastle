@@ -19,7 +19,7 @@ void usage() {
 int main(int argc, char *argv[]) {
     unsigned char kdf_salt[] = "LiteCastleZFish";
     int kdf_iterations = 100000;
-    int max_password_len = 256;
+    int password_len = 200;
 
     char *encrypt_symbol = "-e";
     char *decrypt_symbol = "-d";
@@ -34,22 +34,18 @@ int main(int argc, char *argv[]) {
 
     int zanderfish3_bufsize = 262144;
 
-    if (argc != 5) {
+    if (argc != 6) {
         usage();
         return 0;
     }
 
     FILE *infile, *outfile;
-    char *infile_name, *outfile_name;
-    char *algorithm = "zanderfish3-512";
+    char *infile_name, *outfile_name, *keyfile1_name, *keyfile2_name;
     char *mode = argv[1];
     infile_name = argv[2];
     outfile_name = argv[3];
-    unsigned char *password = argv[4];
-    if (strlen(password) > max_password_len) {
-        printf("Max password limit %d bytes has been exceeded.\n", max_password_len);
-        exit(1);
-    }
+    keyfile1_name = argv[4];
+    keyfile2_name = argv[5];
     if (access(infile_name, F_OK) == -1 ) {
         printf("%s not found\n", infile_name);
         exit(1);
@@ -59,29 +55,11 @@ int main(int argc, char *argv[]) {
     long fsize = ftell(infile);
     fclose(infile);
 
-    if (strcmp(algorithm, "zanderfish3") == 0) {
-        if (strcmp(mode, encrypt_symbol) == 0) {
-            zander3_cbc_encrypt(infile_name, outfile_name, zanderfish3_key_length, zanderfish3_nonce_length, zanderfish3_mac_length, kdf_iterations, kdf_salt, password, keywrap256_ivlen, zanderfish3_bufsize);
-        }
-        else if (strcmp(mode, decrypt_symbol) == 0) {
-            zander3_cbc_decrypt(infile_name, outfile_name, zanderfish3_key_length, zanderfish3_nonce_length, zanderfish3_mac_length, kdf_iterations, kdf_salt, password, keywrap256_ivlen, zanderfish3_bufsize);
-        }
-    } 
-    else if (strcmp(algorithm, "zanderfish3-512") == 0) {
-        if (strcmp(mode, encrypt_symbol) == 0) {
-            zander3_cbc_encrypt(infile_name, outfile_name, zanderfish3_512_key_length, zanderfish3_nonce_length, zanderfish3_mac_length, kdf_iterations, kdf_salt, password, keywrap512_ivlen, zanderfish3_bufsize);
-        }
-        else if (strcmp(mode, decrypt_symbol) == 0) {
-            zander3_cbc_decrypt(infile_name, outfile_name, zanderfish3_512_key_length, zanderfish3_nonce_length, zanderfish3_mac_length, kdf_iterations, kdf_salt, password, keywrap512_ivlen, zanderfish3_bufsize);
-        }
-    } 
-    else if (strcmp(algorithm, "zanderfish3-1024") == 0) {
-        if (strcmp(mode, encrypt_symbol) == 0) {
-            zander3_cbc_encrypt(infile_name, outfile_name, zanderfish3_1024_key_length, zanderfish3_nonce_length, zanderfish3_mac_length, kdf_iterations, kdf_salt, password, keywrap1024_ivlen, zanderfish3_bufsize);
-        }
-        else if (strcmp(mode, decrypt_symbol) == 0) {
-            zander3_cbc_decrypt(infile_name, outfile_name, zanderfish3_1024_key_length, zanderfish3_nonce_length, zanderfish3_mac_length, kdf_iterations, kdf_salt, password, keywrap1024_ivlen, zanderfish3_bufsize);
-        }
-    } 
+    if (strcmp(mode, encrypt_symbol) == 0) {
+        zander3_cbc_encrypt(keyfile1_name, keyfile2_name, infile_name, outfile_name, zanderfish3_512_key_length, zanderfish3_nonce_length, zanderfish3_mac_length, kdf_iterations, kdf_salt, password_len, keywrap512_ivlen, zanderfish3_bufsize);
+    }
+    else if (strcmp(mode, decrypt_symbol) == 0) {
+        zander3_cbc_decrypt(keyfile1_name, keyfile2_name, infile_name, outfile_name, zanderfish3_512_key_length, zanderfish3_nonce_length, zanderfish3_mac_length, kdf_iterations, kdf_salt, password_len, keywrap512_ivlen, zanderfish3_bufsize);
+    }
     return 0;
 }
