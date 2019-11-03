@@ -19,7 +19,7 @@ void usage() {
 int main(int argc, char *argv[]) {
     unsigned char kdf_salt[] = "LiteCastleZFish";
     int kdf_iterations = 100000;
-    int password_len = 200;
+    int password_len = 256;
 
     char *encrypt_symbol = "-e";
     char *decrypt_symbol = "-d";

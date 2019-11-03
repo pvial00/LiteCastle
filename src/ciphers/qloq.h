@@ -158,6 +158,14 @@ void load_skfile(char *filename, struct qloq_ctx * ctx) {
     BN_bin2bn(M, Mn, ctx->M);
 }
 
+void * oaep_encrypt(unsigned char *to, int tlen, unsigned char *f, int fl) {
+    RSA_padding_add_PKCS1_type_1(to, tlen, f, fl);
+}
+
+void * oaep_decrypt(unsigned char *to, int tlen, unsigned char *f, int fl) {
+    RSA_padding_check_PKCS1_type_1(to, tlen, f, fl, 1536);
+}
+
 int qloq_encrypt(struct qloq_ctx *ctx, unsigned char *msg, int msglen) {
     BIGNUM *tmp;
     BIGNUM *BNctxt;
