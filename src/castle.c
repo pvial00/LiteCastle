@@ -13,7 +13,8 @@
 void usage() {
     printf("LiteCastle v1.0 - by KryptoMagik\n\n");
     printf("Algorithm:  zanderfish3      512 bit\n");
-    printf("Usage: lcastle <-e/-d> <input file> <output file> <password>\n\n");
+    printf("Usage:\nlcastle -e <input file> <output file> <public keyfile> <private keyfile>\n");
+    printf("lcastle -d <input file> <output file> <private keyfile> <public keyfile>\n\n");
 }
 
 int main(int argc, char *argv[]) {
