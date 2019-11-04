@@ -8,6 +8,8 @@ LiteCastle is an authenticated file encryption program aiming to provide file en
 
 LiteCastle allows two people to exchange encrypted files using the Q'loQ public key encryption algorithm.  LiteCastle may also be used for general file encryption.
 
+*** Works on Linux, MacOS X, FreeBSD
+
 # Usage
 
 Key generation:
