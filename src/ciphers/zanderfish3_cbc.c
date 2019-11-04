@@ -300,15 +300,20 @@ void * zander3_cbc_encrypt(char *keyfile1, char *keyfile2, char * inputfile, cha
     struct qloq_ctx Sctx;
     load_pkfile(keyfile1, &ctx);
     load_skfile(keyfile2, &Sctx);
-    unsigned char password[password_len];
-    amagus_random(&password, password_len);
+    unsigned char *password[password_len];
+    amagus_random(password, password_len);
     BIGNUM *tmp;
     BIGNUM *BNctxt;
     BIGNUM *S;
     tmp = BN_new();
     BNctxt = BN_new();
     S = BN_new();
-    BN_bin2bn(password, password_len, tmp);
+    int mask_bytes = 384;
+    unsigned char *X[mask_bytes];
+    unsigned char *Y[mask_bytes];
+    amagus_random(Y, mask_bytes);
+    mypad_encrypt(password, password_len, X, mask_bytes, Y);
+    BN_bin2bn(X, mask_bytes, tmp);
     cloak(&ctx, BNctxt, tmp);
     sign(&Sctx, S, BNctxt);
     int ctxtbytes = BN_num_bytes(BNctxt);
@@ -335,7 +340,8 @@ void * zander3_cbc_encrypt(char *keyfile1, char *keyfile2, char * inputfile, cha
     fseek(infile, 0, SEEK_END);
     uint64_t datalen = ftell(infile);
     fseek(infile, 0, SEEK_SET);
-    fwrite(password_ctxt, 1, ctxtbytes, outfile);
+    fwrite(password_ctxt, 1, mask_bytes, outfile);
+    fwrite(Y, 1, mask_bytes, outfile);
     fwrite(sign_ctxt, 1, Sbytes, outfile);
     fwrite(kwnonce, 1, keywrap_ivlen, outfile);
     fwrite(iv, 1, nonce_length, outfile);
@@ -456,6 +462,7 @@ void * zander3_cbc_encrypt(char *keyfile1, char *keyfile2, char * inputfile, cha
 void * zander3_cbc_decrypt(char * keyfile1, char * keyfile2, char * inputfile, char *outputfile, int key_length, int nonce_length, int mac_length, int kdf_iterations, unsigned char * kdf_salt, int password_len,  int keywrap_ivlen, int bufsize) {
     int pkctxt_len = 384;
     int Sctxt_len = 384;
+    int Yctxt_len = 384;
     struct qloq_ctx ctx;
     BIGNUM *tmp;
     BIGNUM *tmpS;
@@ -476,16 +483,18 @@ void * zander3_cbc_decrypt(char * keyfile1, char * keyfile2, char * inputfile, c
     unsigned char *keyprime[key_length];
     unsigned char *kwnonce[keywrap_ivlen];
     unsigned char *passtmp[pkctxt_len];
+    unsigned char *Ytmp[Yctxt_len];
     unsigned char *signtmp[Sctxt_len];
     infile = fopen(inputfile, "rb");
     fseek(infile, 0, SEEK_END);
     uint64_t datalen = ftell(infile);
-    datalen = datalen - key_length - mac_length - nonce_length - keywrap_ivlen - pkctxt_len - Sctxt_len;
+    datalen = datalen - key_length - mac_length - nonce_length - keywrap_ivlen - pkctxt_len - Sctxt_len - Yctxt_len;
     int extrabytes = 32 - (datalen % 32);
     fseek(infile, 0, SEEK_SET);
 
     fread(&mac, 1, mac_length, infile);
-    fread(&passtmp, 1, pkctxt_len, infile);
+    fread(passtmp, 1, pkctxt_len, infile);
+    fread(Ytmp, 1, Yctxt_len, infile);
     fread(&signtmp, 1, Sctxt_len, infile);
     fread(kwnonce, 1, keywrap_ivlen, infile);
     fread(iv, 1, nonce_length, infile);
@@ -493,15 +502,18 @@ void * zander3_cbc_decrypt(char * keyfile1, char * keyfile2, char * inputfile, c
     BN_bin2bn(passtmp, pkctxt_len, tmp);
     decloak(&ctx, BNctxt, tmp);
     int ctxtbytes = BN_num_bytes(BNctxt);
-    unsigned char *password[ctxtbytes];
+    unsigned char password[ctxtbytes];
     BN_bn2bin(BNctxt, password);
+    unsigned char *passkey[password_len];
+    mypad_decrypt(passtmp, password, ctxtbytes, Ytmp);
+    memcpy(passkey, passtmp, password_len);
     BN_bin2bn(signtmp, Sctxt_len, tmpS);
     if (verify(&ctx, tmp, BNctxt) != 0) {
         printf("Error: Signature verification failed. Message is not authentic.\n");
         exit(2);
     }
 
-    manja_kdf(password, ctxtbytes, key, key_length, kdf_salt, strlen(kdf_salt), kdf_iterations);
+    manja_kdf(passkey, ctxtbytes, key, key_length, kdf_salt, strlen(kdf_salt), kdf_iterations);
     manja_kdf(key, key_length, mac_key, key_length, kdf_salt, strlen(kdf_salt), kdf_iterations);
     key_wrap_decrypt(keyprime, key_length, key, kwnonce);
 
@@ -527,7 +539,7 @@ void * zander3_cbc_decrypt(char * keyfile1, char * keyfile2, char * inputfile, c
     if (ganja_hmac_verify(inputfile, mac_key, key_length) == 0) {
         outfile = fopen(outputfile, "wb");
         infile = fopen(inputfile, "rb");
-        fseek(infile, (mac_length + keywrap_ivlen + nonce_length + key_length + pkctxt_len + Sctxt_len), SEEK_SET);
+        fseek(infile, (mac_length + keywrap_ivlen + nonce_length + key_length + pkctxt_len + Sctxt_len + Yctxt_len), SEEK_SET);
         z3gen_subkeys(&state, keyprime, key_length, iv, nonce_length);
         for (i = 0; i < blocks; i++) {
             if (i == (blocks - 1) && (extra != 0)) {

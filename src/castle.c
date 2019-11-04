@@ -11,10 +11,10 @@
 #include "ciphers/zanderfish3_cbc.c"
 
 void usage() {
-    printf("LiteCastle v1.0 - by KryptoMagik\n\n");
-    printf("Algorithm:  zanderfish3      512 bit\n");
-    printf("Usage:\nlcastle -e <input file> <output file> <public keyfile> <private keyfile>\n");
-    printf("lcastle -d <input file> <output file> <private keyfile> <public keyfile>\n\n");
+    printf("LiteCastle v1.1 - by KryptoMagik\n\n");
+    printf("Algorithm:  Zanderfish3-CBC      512 bit\n");
+    printf("Usage:\nlcastle -e <input file> <output file> <public keyfile> <secret keyfile\n");
+    printf("lcastle -d <input file> <output file> <secret keyfile> <public keyfile\n");
 }
 
 int main(int argc, char *argv[]) {
