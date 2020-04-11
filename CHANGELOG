@@ -1,3 +1,7 @@
+v1.3 - Encrypted secret key file + passphrase security
+
+v1.2 - Critical security fix to Q'loQ
+
 v1.1 - Integration of Q'loQ public key encryption and signing
 
 v1.0 - Fork from DarkCastle
