@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <termios.h>
 #include "ciphers/uvajda_oneshot.c"
 #include "ciphers/amagus_oneshot.c"
 #include "crypto_funcs.c"
@@ -11,7 +12,7 @@
 #include "ciphers/zanderfish3_cbc.c"
 
 void usage() {
-    printf("LiteCastle v1.2 - by KryptoMagik\n\n");
+    printf("LiteCastle v1.3 - by KryptoMagik\n\n");
     printf("Algorithm:  Zanderfish3-CBC      512 bit\n");
     printf("Usage:\nlcastle -e <input file> <output file> <public keyfile> <secret keyfile>\n");
     printf("lcastle -d <input file> <output file> <secret keyfile> <public keyfile>\n");
@@ -55,12 +56,22 @@ int main(int argc, char *argv[]) {
     fseek(infile, 0, SEEK_END);
     long fsize = ftell(infile);
     fclose(infile);
+    struct termios tp, save;
+    tcgetattr(STDIN_FILENO, &tp);
+    save = tp;
+    tp.c_lflag &= ~ECHO;
+    tcsetattr(STDIN_FILENO, TCSAFLUSH, &tp);
+
+    unsigned char * passphrase[256];
+    printf("Enter secret key passphrase: ");
+    scanf("%s", passphrase);
+    tcsetattr(STDIN_FILENO, TCSANOW, &save);
 
     if (strcmp(mode, encrypt_symbol) == 0) {
-        zander3_cbc_encrypt(keyfile1_name, keyfile2_name, infile_name, outfile_name, zanderfish3_512_key_length, zanderfish3_nonce_length, zanderfish3_mac_length, kdf_iterations, kdf_salt, password_len, keywrap512_ivlen, zanderfish3_bufsize);
+        zander3_cbc_encrypt(keyfile1_name, keyfile2_name, infile_name, outfile_name, zanderfish3_512_key_length, zanderfish3_nonce_length, zanderfish3_mac_length, kdf_iterations, kdf_salt, password_len, keywrap512_ivlen, zanderfish3_bufsize, passphrase);
     }
     else if (strcmp(mode, decrypt_symbol) == 0) {
-        zander3_cbc_decrypt(keyfile1_name, keyfile2_name, infile_name, outfile_name, zanderfish3_512_key_length, zanderfish3_nonce_length, zanderfish3_mac_length, kdf_iterations, kdf_salt, password_len, keywrap512_ivlen, zanderfish3_bufsize);
+        zander3_cbc_decrypt(keyfile1_name, keyfile2_name, infile_name, outfile_name, zanderfish3_512_key_length, zanderfish3_nonce_length, zanderfish3_mac_length, kdf_iterations, kdf_salt, password_len, keywrap512_ivlen, zanderfish3_bufsize, passphrase);
     }
     return 0;
 }
