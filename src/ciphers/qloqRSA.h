@@ -149,9 +149,6 @@ void pkg_sk_bytes(struct qloq_ctx * ctx, unsigned char * keyblob) {
     sprintf(sknum, "%d", skbytes);
     sprintf(nnum, "%d", nbytes);
     sprintf(Mnum, "%d", Mbytes);
-    printf("%d", skbytes);
-    printf("%d", nbytes);
-    printf("%d", Mbytes);
     int tt = atoi(sknum);
     unsigned char sk[skbytes];
     unsigned char n[nbytes];
@@ -315,7 +312,6 @@ int keygen(struct qloq_ctx * ctx, int psize, char * prefix) {
     /* Set Z1 to equal 1 */
     BN_one(z1);
     while (good != 1) {
-        printf("%d", good);
         /* Generate primes, let them not be equal */
         while (randstat != 1) {
             unsigned char *seed[524288];
