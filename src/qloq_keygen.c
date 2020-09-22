@@ -18,24 +18,29 @@ int main(int argc, char *argv[]) {
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &tp);
     int kdf_iterations = 100000;
     unsigned char kdf_salt[] = "LiteCastleZFish";
-    int psize = 1536;
+    int psize = 3072;
     char * prefix = "QloQ";
     if (argc < 2) {
-        psize = 1536;
+        psize = 3072;
     }
     else {
         psize = atoi(argv[1]);
     }
-    printf("Enter passphrase:");
+
     unsigned char * passphrase[256];
-    scanf("%s", passphrase);
-    unsigned char * passphrase_confirm[256];
-    printf("\nEnter passphrase again:");
-    scanf("%s", passphrase_confirm);
-    if (strcmp(passphrase, passphrase_confirm) != 0) {
-        printf("Error: Passphrase mismatch\n");
-        tcsetattr(STDIN_FILENO, TCSANOW, &save);
-        exit(1);
+    while (1) {
+        printf("Enter passphrase:");
+        scanf("%s", passphrase);
+        unsigned char * passphrase_confirm[256];
+        printf("\nEnter passphrase again:");
+        scanf("%s", passphrase_confirm);
+        if (strcmp(passphrase, passphrase_confirm) != 0) {
+            printf("Error: Passphrase mismatch\n");
+        }
+        else {
+            printf("\nGenerating keys...this may take a while...\n");
+            break;
+        }
     }
     tcsetattr(STDIN_FILENO, TCSANOW, &save);
     qloq_keygen(psize, prefix, passphrase, kdf_salt, kdf_iterations);

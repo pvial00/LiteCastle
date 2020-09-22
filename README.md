@@ -29,7 +29,3 @@ lcastle -d inputfile outputfile skfile pkfile
 Zanderfish3 512 bit authenticated with Ganja 256 bit - 256 bit IV length
 
 https://github.com/pvial00/Zanderfish3
-
-Q'loQ Public Key Algorithm
-
-https://github.com/pvial00/QloQ

@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
-#include "qloq.h"
+#include "qloqRSA.h"
 
 int z3blocklen = 32;
 
@@ -578,6 +578,7 @@ void * zander3_cbc_decrypt_kf(char * inputfile, int key_length, int nonce_length
             pos += 1;
         }
         int skn = atoi(sknum);
+        printf("%d\n", skn);
         unsigned char sk[skn];
         for (pi = 0; pi < (skn); pi++) {
             sk[pi] = kf_blob[pos];
@@ -630,7 +631,7 @@ void * zander3_cbc_encrypt(char *keyfile1, char *keyfile2, char * inputfile, cha
     tmp = BN_new();
     BNctxt = BN_new();
     S = BN_new();
-    int mask_bytes = 384;
+    int mask_bytes = 768;
     unsigned char *X[mask_bytes];
     unsigned char *Y[mask_bytes];
     amagus_random(Y, mask_bytes);
@@ -782,9 +783,9 @@ void * zander3_cbc_encrypt(char *keyfile1, char *keyfile2, char * inputfile, cha
 }
 
 void * zander3_cbc_decrypt(char * keyfile1, char * keyfile2, char * inputfile, char *outputfile, int key_length, int nonce_length, int mac_length, int kdf_iterations, unsigned char * kdf_salt, int password_len,  int keywrap_ivlen, int bufsize, unsigned char * passphrase) {
-    int pkctxt_len = 384;
-    int Sctxt_len = 384;
-    int Yctxt_len = 384;
+    int pkctxt_len = 768;
+    int Sctxt_len = 768;
+    int Yctxt_len = 768;
     struct qloq_ctx ctx;
     BIGNUM *tmp;
     BIGNUM *tmpS;

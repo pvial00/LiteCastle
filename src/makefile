@@ -11,5 +11,4 @@ $(KEYGEN): qloq_keygen.c
 	$(CC) qloq_keygen.c $(CFLAGS) -o $(KEYGEN)
 
 clean:
-	$(RM) $(TARGET)
-	$(RM) $(KEYGEN)
+	$(RM) $(TARGET) $(RM) $(KEYGEN)
