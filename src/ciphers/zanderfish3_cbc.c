@@ -578,7 +578,6 @@ void * zander3_cbc_decrypt_kf(char * inputfile, int key_length, int nonce_length
             pos += 1;
         }
         int skn = atoi(sknum);
-        printf("%d\n", skn);
         unsigned char sk[skn];
         for (pi = 0; pi < (skn); pi++) {
             sk[pi] = kf_blob[pos];
