@@ -1,3 +1,5 @@
+v1.5 - Integrationg of Signing keys, Signing and verification algorithm change
+
 v1.4 - Migration to Q'loQ-RSA, a multi prime, multi modulus implementation of RSA
 
 v1.3 - Encrypted secret key file + passphrase security
