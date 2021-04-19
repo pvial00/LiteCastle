@@ -1,5 +1,7 @@
 # LiteCastle
 
+*** THIS PROJECT IS NO LONGER BEING DEVELOPED.  PLEASE USE DARKCASTLE.
+
 *** Warning the cipher contained in this program is still undergoing cryptanalysis
 
 *** This program may be used to encrypt arbitrary file sizes
